@@ -5,6 +5,7 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
 
+
 // Check if a user with the given username already exists
 const doesExist = (username) => {
     // Filter the users array for any user with the same username
@@ -39,33 +40,95 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+/*public_users.get('/',function (req, res) {
   //Write your code here
   return res.status(200).json({message: books});
-});
+});*/
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+/*public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const currentIsbn = req.params.isbn;
   const filteredIsbn = books[currentIsbn];
   return res.status(200).json({message: filteredIsbn});
- });
+ });*/
+
+ 
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+/*public_users.get('/author/:author',function (req, res) {
   //Write your code here
   const author = req.params.author;
   const filteredBooks = Object.values(books).filter((book) => book.author === author);
   return res.status(200).json({message: filteredBooks});
+});*/
+
+// Get all books based on title
+/*public_users.get('/title/:title',function (req, res) {
+    //Write your code here
+    const title = req.params.title;
+    const filteredBooks = Object.values(books).filter((book) => book.title === title);
+    return res.status(200).json({message: filteredBooks});
+  });*/
+
+// Get the book list available in the shop
+public_users.get('/',async (req, res) =>{
+    //Write your code here
+    try{
+        const result = await new Promise((resolve,reject) =>{
+            resolve(books);
+        });
+        return res.status(200).json(result);
+    }catch(err){
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+    
+});
+
+public_users.get('/isbn/:isbn',async (req, res) =>{
+    //Write your code here
+    try{
+        const currentIsbn = req.params.isbn;
+        const result = await new Promise((resolve,reject) => {
+            const filteredIsbn = books[currentIsbn];
+            resolve(filteredIsbn);
+        });
+        return res.status(200).json({message: result});
+    }catch(err){
+        return res.status(500).json({message: "Internal Server Error"});
+    }
+    
+});
+
+public_users.get('/author/:author',async (req, res) =>{
+  //Write your code here
+  try{
+    const author = req.params.author;
+    const filtered_books = await new Promise((resolve,reject) => {
+        const filteredBooks = Object.values(books).filter((book) => book.author === author);
+        resolve(filteredBooks);
+    });
+    return res.status(200).json({message: filtered_books});
+  }catch(err){
+    return res.status(500).json({message: "Internal Server Error"});
+  }
+  
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title',async (req, res) => {
   //Write your code here
-  const title = req.params.title;
-  const filteredBooks = Object.values(books).filter((book) => book.title === title);
-  return res.status(200).json({message: filteredBooks});
+  try{
+    const title = req.params.title;
+    const filtered_title = await new Promise((resolve,reject) => {
+        const filteredBooks = Object.values(books).filter((book) => book.title === title);
+        resolve(filteredBooks);
+    });
+    return res.status(200).json({message: filtered_title});
+  }catch(err){
+    return res.status(500).json({message: "Internal Server Error"});
+  }
+  
 });
 
 //  Get book review
